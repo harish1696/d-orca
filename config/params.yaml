@@ -1,0 +1,8 @@
+# the total number of agents to be spawned
+/dorca/totalAgents : 30
+/dorca/timeStep : 0.5
+/dorca/neighborDist : 5
+/dorca/maxNeighbors : 4
+/dorca/timeHorizon : 10
+/dorca/radius : 1
+/dorca/maxSpeed : 1
