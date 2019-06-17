@@ -1,3 +1,3 @@
 [submodule "Firmware"]
-	path = Firmware
-	url = git@github.com:harish1696/Firmware
+	path = libs/Firmware
+	url = git@github.com:harish1696/d-orca.git
