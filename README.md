@@ -1,4 +1,4 @@
-# Introduction
+# d-ORCA (Distributed Optimal Reciprocal Collision Avoidance)
 
 Before using the package, create a catkin workspace using the following commands
 
