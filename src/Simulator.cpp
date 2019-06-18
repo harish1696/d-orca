@@ -7,7 +7,7 @@ Simulator::Simulator(int agentNo, int argc, char** argv) {
   nh_.getParam("/dorca/maxNeighbors", maxNeighbors);
   nh_.getParam("/dorca/timeHorizon", timeHorizon);
   nh_.getParam("/dorca/radius", radius);
-  nh_.getParam("/dorca/maxSpeed", maxSpeed)
+  nh_.getParam("/dorca/maxSpeed", maxSpeed);
 
   this->agentNo = agentNo;
 
