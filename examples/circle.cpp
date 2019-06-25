@@ -12,9 +12,9 @@ int main(int argc, char **argv) {
 
   //Agent* agent = new Agent();
   Simulator* sim = new Simulator(agentNo, argc, argv);
-  
-  ros::spinOnce();
-  rate.sleep();
+
+  // ros::spinOnce();
+  // rate.sleep();
 
   // Setup RVO simulation.
   sim->setupSimulator();
