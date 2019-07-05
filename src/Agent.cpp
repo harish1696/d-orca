@@ -13,9 +13,8 @@ Agent::Agent(int agentNo) {
      if (i != agentNo)
      vel_sub =  nh.subscribe<geometry_msgs::Twist>(s+"/mavros/setpoint_velocity/cmd_vel_unstamped", 1, boost::bind(&Agent::velocity_cb, this, _1, i));
   }
-
-  is_update_goal = true;
   publishInitialPose();
+  is_update_goal = true;
 }
 
 Agent::~Agent() {}
@@ -48,10 +47,16 @@ void Agent::publishInitialPose() {
   }
 }
 
+void Agent::setAgentGoal(geometry_msgs::PoseStamped goal) {
+  agentGoal = RVO::Vector3(goal.pose.position.x, goal.pose.position.y, goal.pose.position.z);
+  std::cout << "Agent " << agentNo << " Goal : " << agentGoal << "\n";
+}
+
 void Agent::setAgentGoal() {
   agentGoal = RVO::Vector3(qpose[agentNo].pose.position.x, qpose[agentNo].pose.position.y, 5);
   std::cout << "Agent " << agentNo << " Goal : " << agentGoal << "\n";
 }
+
 
 void Agent::publishAgentVelocity(RVO::Vector3 vel) {
   geometry_msgs::Twist velo;
@@ -74,34 +79,27 @@ RVO::Vector3 Agent::getPreferredVelocity() {
   return goalVector;
 }
 
-void Agent::reachedGoal(double radius) {
+bool Agent::reachedGoal(double radius) {
   // Construct the current position vector of the agent.
   RVO::Vector3 posVector = RVO::Vector3(qpose[agentNo].pose.position.x, qpose[agentNo].pose.position.y, qpose[agentNo].pose.position.z);
+
   // Check if agent reached its goal.
   if (RVO::absSq(posVector - agentGoal) < radius * radius) {
-    //std::cout << "Agent " << agentNo  << "reached its goal.\n";
-    if (is_update_goal) {
-      agentGoal = RVO::Vector3(-qpose[agentNo].pose.position.x, -qpose[agentNo].pose.position.y, 5);
-      is_update_goal = false;
-    }
+    return true;
   }
+  return false;
 }
 
-bool Agent::arm() {
+void Agent::arm() {
   if (current_state.mode != "OFFBOARD") {
     mavros_msgs::SetMode offb_set_mode;
     offb_set_mode.request.custom_mode = "OFFBOARD";
-    if (set_mode_client.call(offb_set_mode) && offb_set_mode.response.mode_sent) {
-      return true;
-    }
+    set_mode_client.call(offb_set_mode);
   } else {
     if (!current_state.armed) {
       mavros_msgs::CommandBool arm_cmd;
       arm_cmd.request.value = true;
-      if (arming_client.call(arm_cmd) && arm_cmd.response.success) {
-        return true;
-      }
+      arming_client.call(arm_cmd);
     }
   }
-  return false;
 }

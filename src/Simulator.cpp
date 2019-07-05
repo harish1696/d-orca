@@ -13,26 +13,19 @@ Simulator::Simulator(int agentNo, int argc, char** argv) {
 
   rvo_sim_ = new RVO::RVOSimulator();
   agent = new Agent(agentNo);
-  InitGazebo(argc, argv);
+  // InitGazebo(argc, argv);
   initialize();
 
-  sub = node->Subscribe("/gazebo/default/pose/info", &Simulator::gazebocb, this);
+  //sub = node->Subscribe("/gazebo/default/pose/info", &Simulator::gazebocb, this);
+  gazebo_pose_sub_ = nh_.subscribe("/gazebo/model_states", 1, &Simulator::gzmavposeCallback, this, ros::TransportHints().tcpNoDelay());
   is_pose_obtained_ = false;
 }
 
 Simulator::~Simulator() {}
 
-void Simulator::InitGazebo(int argc, char** argv) {
-  gazebo::client::setup(argc, argv);
-  node = gazebo::transport::NodePtr(new gazebo::transport::Node());
-  node->Init();
-}
-
-//Get current position feedback for all drones from Gazebo.
-void Simulator::gazebocb(ConstPosesStampedPtr &_msg) {
-  for (int i =0; i < _msg->pose_size(); ++i) {
-    const ::gazebo::msgs::Pose &pose = _msg->pose(i);
-    std::string name = pose.name();
+void Simulator::gzmavposeCallback(const gazebo_msgs::ModelStates& msg) {
+  for(int i = 0; i < msg.pose.size(); i++) {
+    std::string name = msg.name[i];
     std::string modelName = name.substr(0,4);
     if (agent->qpose.size()) {
       // Currently works for 99 drones.
@@ -40,29 +33,26 @@ void Simulator::gazebocb(ConstPosesStampedPtr &_msg) {
         if (name.length() == 6) {
           std::string substring = name.substr(5,1);
           int index = stoi(substring, nullptr, 10);
-          const ::gazebo::msgs::Vector3d &position = pose.position();
-          agent->qpose[index-1].pose.position.x = position.x();
-          agent->qpose[index-1].pose.position.y = position.y();
-          agent->qpose[index-1].pose.position.z = position.z();
-          agent->qpose[index-1].pose.orientation.x = pose.orientation().x();
-          agent->qpose[index-1].pose.orientation.y = pose.orientation().y();
-          agent->qpose[index-1].pose.orientation.z = pose.orientation().z();
-          agent->qpose[index-1].pose.orientation.w = pose.orientation().w();
+          agent->qpose[index-1].pose.position.x = msg.pose[i].position.x;
+          agent->qpose[index-1].pose.position.y = msg.pose[i].position.y;
+          agent->qpose[index-1].pose.position.z = msg.pose[i].position.z;
+          agent->qpose[index-1].pose.orientation.x = msg.pose[i].orientation.x;
+          agent->qpose[index-1].pose.orientation.y = msg.pose[i].orientation.y;
+          agent->qpose[index-1].pose.orientation.z = msg.pose[i].orientation.z;
+          agent->qpose[index-1].pose.orientation.w = msg.pose[i].orientation.w;
         } else {
           std::string substring = name.substr(5,2);
           int index = stoi(substring, nullptr, 10);
-          const ::gazebo::msgs::Vector3d &position = pose.position();
-          agent->qpose[index-1].pose.position.x = position.x();
-          agent->qpose[index-1].pose.position.y = position.y();
-          agent->qpose[index-1].pose.position.z = position.z();
-          agent->qpose[index-1].pose.orientation.x = pose.orientation().x();
-          agent->qpose[index-1].pose.orientation.y = pose.orientation().y();
-          agent->qpose[index-1].pose.orientation.z = pose.orientation().z();
-          agent->qpose[index-1].pose.orientation.w = pose.orientation().w();
+          agent->qpose[index-1].pose.position.x = msg.pose[i].position.x;
+          agent->qpose[index-1].pose.position.y = msg.pose[i].position.y;
+          agent->qpose[index-1].pose.position.z = msg.pose[i].position.z;
+          agent->qpose[index-1].pose.orientation.x = msg.pose[i].orientation.x;
+          agent->qpose[index-1].pose.orientation.y = msg.pose[i].orientation.y;
+          agent->qpose[index-1].pose.orientation.z = msg.pose[i].orientation.z;
+          agent->qpose[index-1].pose.orientation.w = msg.pose[i].orientation.w;
         }
       }
-      if (agent->qpose[agentNo].pose.position.x && agent->qpose[agentNo].pose.position.y)
-        is_pose_obtained_ = true;
+      is_pose_obtained_ = true;
     } else {
       initialize();
     }
@@ -93,7 +83,6 @@ void Simulator::initialize() {
 }
 
 void Simulator::setupSimulator() {
-  // Specify the global time step of the simulation.
   rvo_sim_->setTimeStep(timeStep);
 
   // Specify the default parameters for agents that are subsequently added.
@@ -108,20 +97,30 @@ void Simulator::setupSimulator() {
   while (!is_pose_obtained_) {
     ros::spinOnce();
   }
-  agent->setAgentGoal();
+}
+
+geometry_msgs::PoseStamped Simulator::getAgentPosition() {
+  return agent->qpose[agentNo];
+}
+
+void Simulator::setAgentGoal(geometry_msgs::PoseStamped goal) {
+  agent->setAgentGoal(goal);
+}
+
+bool Simulator::hasAgentReachedGoal() {
+  // Check if agent reached goal
+  return agent->reachedGoal(rvo_sim_->getAgentRadius(agentNo));
 }
 
 void Simulator::updateAgent() {
-  if (agent->arm()) {
-    // Check if agent reached goal
-    agent->reachedGoal(rvo_sim_->getAgentRadius(agentNo));
-    // Publish velocity to the agents.
-    agent->publishAgentVelocity(rvo_sim_->getAgentVelocity(agentNo));
-    // Set agent's preffered velocity (directed towards the target waypoint).
-    rvo_sim_->setAgentPrefVelocity(agentNo, agent->getPreferredVelocity());
-    // Set agent position in simulator
-    rvo_sim_->setAgentPosition(agentNo, RVO::Vector3(agent->qpose[agentNo].pose.position.x, agent->qpose[agentNo].pose.position.y, agent->qpose[agentNo].pose.position.z));
-  }
+  // arm the agent
+  agent->arm();
+  // Publish velocity to the agents.
+  agent->publishAgentVelocity(rvo_sim_->getAgentVelocity(agentNo));
+  // Set agent's preffered velocity (directed towards the target waypoint).
+  rvo_sim_->setAgentPrefVelocity(agentNo, agent->getPreferredVelocity());
+  // Set agent position in simulator
+  rvo_sim_->setAgentPosition(agentNo, RVO::Vector3(agent->qpose[agentNo].pose.position.x, agent->qpose[agentNo].pose.position.y, agent->qpose[agentNo].pose.position.z));
 }
 
 void Simulator::updateSimulator() {
@@ -136,12 +135,5 @@ void Simulator::updateSimulator() {
 }
 
 void Simulator::killSimulator() {
-  sub.reset();
-  node->Fini();
-
-  gazebo::transport::fini();
-  node.reset();
-  gazebo::client::shutdown();
-
   delete rvo_sim_;
 }

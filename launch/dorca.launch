@@ -2,13 +2,13 @@
 <launch>
   <rosparam command="load" file="$(find dorca)/config/params.yaml" />
 
-  <arg name="nr" default="2"/>
+  <arg name="nr" default="29"/>
   <group ns="$(eval 'robot' + str(arg('nr')))">
       <node pkg="dorca" type="dorcacircle" name="dorcacircle" args = "$(arg nr)" output="screen"/>
    </group>
 
    <!-- recursively start new node until a particular nod number-->
-   <include file="$(find dorca)/launch/dorca.launch" if="$(eval arg('nr') - 1 >= 2)">
+   <include file="$(find dorca)/launch/dorca.launch" if="$(eval arg('nr') - 1 >= 15)">
        <arg name="nr" value="$(eval arg('nr') - 1)"/>
    </include>
 
