@@ -49,6 +49,7 @@ Agent::Agent(int agentNo) {
   // }
   publishInitialPose();
   is_update_goal = true;
+  is_agent_armed = false;
 }
 
 Agent::~Agent() {}
@@ -123,11 +124,13 @@ void Agent::arm() {
     mavros_msgs::SetMode offb_set_mode;
     offb_set_mode.request.custom_mode = "OFFBOARD";
     set_mode_client.call(offb_set_mode);
+    
   } else {
     if (!is_agent_armed) {
       mavros_msgs::CommandBool arm_cmd;
       arm_cmd.request.value = true;
       arming_client.call(arm_cmd);
+      is_agent_armed = true;
     }
   }
 }

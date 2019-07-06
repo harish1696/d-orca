@@ -8,13 +8,13 @@ Publisher::Publisher() {
   for (int i = 0; i < totalAgents; i++) {
      std::string s = "/uav" + std::to_string(i+1);
      state_sub = nh_.subscribe<mavros_msgs::State>(s+"/mavros/state", 10, boost::bind(&Publisher::state_cb, this, _1, i));
-     vel_sub =  nh_.subscribe<geometry_msgs::Twist>(s+"/mavros/setpoint_velocity/cmd_vel_unstamped", 1, boost::bind(&Publisher::velocity_cb, this, _1, i));
+     //vel_sub =  nh_.subscribe<geometry_msgs::Twist>(s+"/mavros/setpoint_velocity/cmd_vel_unstamped", 1, boost::bind(&Publisher::velocity_cb, this, _1, i));
      gazebo_pose_sub_ = nh_.subscribe("/gazebo/model_states", 1, &Publisher::gzmavposeCallback, this, ros::TransportHints().tcpNoDelay());
   }
 
   is_mode_obtained = false;
   is_pose_obtained_ = false;
-  is_velocity_obtained = false;
+  is_velocity_obtained = true;
 }
 
 void Publisher::state_cb(const mavros_msgs::State::ConstPtr& msg, int i) {
@@ -73,8 +73,9 @@ void Publisher::initialize() {
 }
 
 void Publisher::publishMessages() {
-  if (is_mode_obtained && is_pose_obtained_ && is_velocity_obtained)
+  if (is_mode_obtained && is_pose_obtained_ && is_velocity_obtained) {
     pub_state_.publish(agents);
+  }
 }
 
 int main(int argc, char** argv){

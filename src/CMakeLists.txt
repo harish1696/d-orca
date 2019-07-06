@@ -10,3 +10,7 @@ add_dependencies(Simulator ${catkin_EXPORTED_TARGETS})
 add_library(Agent Agent.cpp )
 target_link_libraries(Agent ${catkin_LIBRARIES} rvo2_3d ${GAZEBO_LIBRARIES})
 add_dependencies(Agent ${catkin_EXPORTED_TARGETS})
+
+add_executable(state_publisher publisher.cpp )
+target_link_libraries(state_publisher ${catkin_LIBRARIES})
+add_dependencies(state_publisher ${catkin_EXPORTED_TARGETS})
