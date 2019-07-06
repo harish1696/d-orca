@@ -14,6 +14,7 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/gazebo_config.h>
 #include <gazebo/gazebo_client.hh>
+#include <gazebo_msgs/ModelStates.h>
 #include <vector>
 
 #include "Agent.hpp"
@@ -21,24 +22,25 @@
 class Simulator {
   private:
     ros::NodeHandle nh_;
+    ros::Subscriber gazebo_pose_sub_;
     int totalAgents, agentNo, maxNeighbors;
     float timeStep, neighborDist, timeHorizon, radius, maxSpeed;
     bool is_pose_obtained_;
-    gazebo::transport::NodePtr node;
-    gazebo::transport::SubscriberPtr sub;
     RVO::RVOSimulator* rvo_sim_;
     Agent* agent;
 
   public:
     Simulator(int agentNo, int argc, char** argv);
     ~Simulator();
-    void InitGazebo(int argc, char** argv);
     void initialize();
     void setupSimulator();
+    bool hasAgentReachedGoal();
     void updateSimulator();
     void updateAgent();
     void killSimulator();
-    void gazebocb(ConstPosesStampedPtr &_msg);
+    void gzmavposeCallback(const gazebo_msgs::ModelStates& msg);
+    geometry_msgs::PoseStamped getAgentPosition();
+    void setAgentGoal(geometry_msgs::PoseStamped goal);
 };
 
 

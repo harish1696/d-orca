@@ -4,31 +4,37 @@
 using namespace std;
 
 int main(int argc, char **argv) {
-  // Initialize ROS node.
   ros::init(argc, argv, "dorcacircle");
   ros::NodeHandle nh;
-  ros::Rate rate(30.0);
+  ros::Rate loop_rate(10.0);
   int agentNo = std::stoi(argv[1]);
+  bool is_armed_ = false;
 
-  //Agent* agent = new Agent();
   Simulator* sim = new Simulator(agentNo, argc, argv);
-  
-  ros::spinOnce();
-  rate.sleep();
 
   // Setup RVO simulation.
   sim->setupSimulator();
-
-  // Set rate for loop.
-  ros::Rate loop_rate(10.0);
+  geometry_msgs::PoseStamped agent_pose = sim->getAgentPosition();
+  agent_pose.pose.position.z = 5;
+  sim->setAgentGoal(agent_pose);
 
   while(ros::ok()) {
     ros::spinOnce();
     loop_rate.sleep();
-    sim->updateAgent();
 
-    // update the simulator and perform do step
-    sim->updateSimulator();
+    if (!(sim->hasAgentReachedGoal())) {
+      //set agent's velocity to chosen velocity and update the agent's preferred velocity
+      sim->updateAgent();
+
+      // update the simulator and perform do step
+      sim->updateSimulator();
+    } else {
+      // update the agent goal
+      agent_pose = sim->getAgentPosition();
+      agent_pose.pose.position.x = -agent_pose.pose.position.x;
+      agent_pose.pose.position.y = -agent_pose.pose.position.y;
+      sim->setAgentGoal(agent_pose);
+    }
   }
 
   sim->killSimulator();
