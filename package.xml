@@ -54,6 +54,7 @@
   <depend>rospy</depend>
   <depend>std_msgs</depend>
   <depend>mavros</depend>
+  <depend>message_generation</depend>
   <depend>gazebo_msgs</depend>
   <depend>gazebo_plugin</depend>
   <depend>gazebo</depend>

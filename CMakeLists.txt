@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 2.8.3)
 project(dorca)
 
 add_compile_options(-std=c++11)
@@ -9,13 +8,21 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   mavros
+  message_generation
+)
+
+add_message_files(DIRECTORY msg)
+
+generate_messages( DEPENDENCIES
+  std_msgs
+	geometry_msgs
 )
 
 find_package(gazebo REQUIRED)
 
 catkin_package(
  INCLUDE_DIRS include libs src
- CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs mavros
+ CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs mavros message_generation
 )
 
 include_directories(include

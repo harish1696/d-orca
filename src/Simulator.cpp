@@ -1,6 +1,40 @@
+/**
+ * BSD 3-Clause LICENSE
+ *
+ * Copyright <2019> <HARISH SAMPATHKUMAR>
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include "Simulator.hpp"
 
-Simulator::Simulator(int agentNo, int argc, char** argv) {
+Simulator::Simulator(int agentNo) {
   nh_.getParam("/dorca/totalAgents", totalAgents);
   nh_.getParam("/dorca/timeStep", timeStep);
   nh_.getParam("/dorca/neighborDist", neighborDist);
@@ -13,49 +47,70 @@ Simulator::Simulator(int agentNo, int argc, char** argv) {
 
   rvo_sim_ = new RVO::RVOSimulator();
   agent = new Agent(agentNo);
-  // InitGazebo(argc, argv);
   initialize();
 
-  //sub = node->Subscribe("/gazebo/default/pose/info", &Simulator::gazebocb, this);
-  gazebo_pose_sub_ = nh_.subscribe("/gazebo/model_states", 1, &Simulator::gzmavposeCallback, this, ros::TransportHints().tcpNoDelay());
-  is_pose_obtained_ = false;
+  //gazebo_pose_sub_ = nh_.subscribe("/gazebo/model_states", 1, &Simulator::gzmavposeCallback, this, ros::TransportHints().tcpNoDelay());
+  agent_states_sub_ = nh_.subscribe("/publisher/state", 1, &Simulator::agentStatesCallback, this, ros::TransportHints().tcpNoDelay());
+  is_agent_state_obtained_ = false;
 }
 
 Simulator::~Simulator() {}
 
-void Simulator::gzmavposeCallback(const gazebo_msgs::ModelStates& msg) {
-  for(int i = 0; i < msg.pose.size(); i++) {
-    std::string name = msg.name[i];
-    std::string modelName = name.substr(0,4);
-    if (agent->qpose.size()) {
-      // Currently works for 99 drones.
-      if (name.length() < 8 && name.length() > 5 && modelName == std::string("iris")) {
-        if (name.length() == 6) {
-          std::string substring = name.substr(5,1);
-          int index = stoi(substring, nullptr, 10);
-          agent->qpose[index-1].pose.position.x = msg.pose[i].position.x;
-          agent->qpose[index-1].pose.position.y = msg.pose[i].position.y;
-          agent->qpose[index-1].pose.position.z = msg.pose[i].position.z;
-          agent->qpose[index-1].pose.orientation.x = msg.pose[i].orientation.x;
-          agent->qpose[index-1].pose.orientation.y = msg.pose[i].orientation.y;
-          agent->qpose[index-1].pose.orientation.z = msg.pose[i].orientation.z;
-          agent->qpose[index-1].pose.orientation.w = msg.pose[i].orientation.w;
-        } else {
-          std::string substring = name.substr(5,2);
-          int index = stoi(substring, nullptr, 10);
-          agent->qpose[index-1].pose.position.x = msg.pose[i].position.x;
-          agent->qpose[index-1].pose.position.y = msg.pose[i].position.y;
-          agent->qpose[index-1].pose.position.z = msg.pose[i].position.z;
-          agent->qpose[index-1].pose.orientation.x = msg.pose[i].orientation.x;
-          agent->qpose[index-1].pose.orientation.y = msg.pose[i].orientation.y;
-          agent->qpose[index-1].pose.orientation.z = msg.pose[i].orientation.z;
-          agent->qpose[index-1].pose.orientation.w = msg.pose[i].orientation.w;
-        }
-      }
-      is_pose_obtained_ = true;
-    } else {
-      initialize();
+// void Simulator::gzmavposeCallback(const gazebo_msgs::ModelStates& msg) {
+//   for(int i = 0; i < msg.pose.size(); i++) {
+//     std::string name = msg.name[i];
+//     std::string modelName = name.substr(0,4);
+//     if (agent->qpose.size()) {
+//       // Currently works for 99 drones.
+//       if (name.length() < 8 && name.length() > 5 && modelName == std::string("iris")) {
+//         if (name.length() == 6) {
+//           std::string substring = name.substr(5,1);
+//           int index = stoi(substring, nullptr, 10);
+//           agent->qpose[index-1].pose.position.x = msg.pose[i].position.x;
+//           agent->qpose[index-1].pose.position.y = msg.pose[i].position.y;
+//           agent->qpose[index-1].pose.position.z = msg.pose[i].position.z;
+//           agent->qpose[index-1].pose.orientation.x = msg.pose[i].orientation.x;
+//           agent->qpose[index-1].pose.orientation.y = msg.pose[i].orientation.y;
+//           agent->qpose[index-1].pose.orientation.z = msg.pose[i].orientation.z;
+//           agent->qpose[index-1].pose.orientation.w = msg.pose[i].orientation.w;
+//         } else {
+//           std::string substring = name.substr(5,2);
+//           int index = stoi(substring, nullptr, 10);
+//           agent->qpose[index-1].pose.position.x = msg.pose[i].position.x;
+//           agent->qpose[index-1].pose.position.y = msg.pose[i].position.y;
+//           agent->qpose[index-1].pose.position.z = msg.pose[i].position.z;
+//           agent->qpose[index-1].pose.orientation.x = msg.pose[i].orientation.x;
+//           agent->qpose[index-1].pose.orientation.y = msg.pose[i].orientation.y;
+//           agent->qpose[index-1].pose.orientation.z = msg.pose[i].orientation.z;
+//           agent->qpose[index-1].pose.orientation.w = msg.pose[i].orientation.w;
+//         }
+//       }
+//       is_pose_obtained_ = true;
+//     } else {
+//       initialize();
+//     }
+//   }
+// }
+
+void Simulator::agentStatesCallback(const dorca::AgentStates& msg) {
+  if (agent->qpose.size() == totalAgents && agent->qvel.size() == totalAgents) {
+    for(int i = 0; i < msg.agent.size(); i++) {
+      agent->qpose[i].pose.position.x = msg.agent[i].pose.pose.position.x;
+      agent->qpose[i].pose.position.y = msg.agent[i].pose.pose.position.y;
+      agent->qpose[i].pose.position.z = msg.agent[i].pose.pose.position.z;
+      agent->qpose[i].pose.orientation.x = msg.agent[i].pose.pose.orientation.x;
+      agent->qpose[i].pose.orientation.y = msg.agent[i].pose.pose.orientation.y;
+      agent->qpose[i].pose.orientation.z = msg.agent[i].pose.pose.orientation.z;
+      agent->qpose[i].pose.orientation.w = msg.agent[i].pose.pose.orientation.w;
+      agent->qvel[i].linear.x = msg.agent[i].velocity.linear.x;
+      agent->qvel[i].linear.y = msg.agent[i].velocity.linear.y;
+      agent->qvel[i].linear.z = msg.agent[i].velocity.linear.z;
+      agent->agent_mode = msg.agent[i].mode;
+      agent->is_agent_armed = msg.agent[i].armed;
+      is_agent_state_obtained_ = true;
     }
+  } else {
+    initialize();
   }
 }
 
@@ -94,7 +149,7 @@ void Simulator::setupSimulator() {
   }
 
   agent->setArmAndModeTopics();
-  while (!is_pose_obtained_) {
+  while (!is_agent_state_obtained_) {
     ros::spinOnce();
   }
 }
