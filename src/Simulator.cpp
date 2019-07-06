@@ -169,11 +169,15 @@ bool Simulator::hasAgentReachedGoal() {
 
 void Simulator::updateAgent() {
   // arm the agent
+  //std::cout << "1\n";
   agent->arm();
+  //std::cout << "2\n";
   // Publish velocity to the agents.
   agent->publishAgentVelocity(rvo_sim_->getAgentVelocity(agentNo));
+  //std::cout << "3\n";
   // Set agent's preffered velocity (directed towards the target waypoint).
   rvo_sim_->setAgentPrefVelocity(agentNo, agent->getPreferredVelocity());
+  //std::cout << "4\n";
   // Set agent position in simulator
   rvo_sim_->setAgentPosition(agentNo, RVO::Vector3(agent->qpose[agentNo].pose.position.x, agent->qpose[agentNo].pose.position.y, agent->qpose[agentNo].pose.position.z));
 }
