@@ -20,9 +20,9 @@ class Agent {
     ros::ServiceClient arming_client, set_mode_client;
 
     int agentNo, totalAgents;
-    bool is_update_goal;
     RVO::Vector3 agentGoal;
     mavros_msgs::State current_state;
+    bool is_update_goal;
 
   public:
     Agent(int agentNo);
@@ -31,11 +31,12 @@ class Agent {
     void velocity_cb(const geometry_msgs::Twist::ConstPtr& msg, int i);
     void publishInitialPose();
     RVO::Vector3 getPreferredVelocity();
-    void reachedGoal(double radius);
+    bool reachedGoal(double radius);
     void publishAgentVelocity(RVO::Vector3 vel);
-    bool arm();
+    void arm();
     void setMode();
     void setCommand();
+    void setAgentGoal(geometry_msgs::PoseStamped goal);
     void setAgentGoal();
     void setArmAndModeTopics();
 
