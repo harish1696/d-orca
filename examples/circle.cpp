@@ -1,5 +1,6 @@
 #include "Simulator.hpp"
 #include "Agent.hpp"
+#include <chrono>
 
 using namespace std;
 
@@ -20,7 +21,8 @@ int main(int argc, char **argv) {
   sim->setAgentGoal(agent_pose);
 
   while(ros::ok()) {
-    ros::Time start = ros::Time::now();
+    //ros::Time start = ros::Time::now();
+    auto start = std::chrono::high_resolution_clock::now();
     ros::spinOnce();
     loop_rate.sleep();
 
@@ -36,11 +38,14 @@ int main(int argc, char **argv) {
         agent_pose = sim->getAgentPosition();
         agent_pose.pose.position.x = -agent_pose.pose.position.x;
         agent_pose.pose.position.y = -agent_pose.pose.position.y;
+        agent_pose.pose.position.z = 5;
         sim->setAgentGoal(agent_pose);
         update_goal = false;
       }
     }
-    std::cout << "Agent " << agentNo << " : " << ros::Time::now() - start << "\n";
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "Agent " << agentNo << " : " << elapsed_time << "\n";
   }
 
   sim->killSimulator();
