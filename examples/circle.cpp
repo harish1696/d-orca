@@ -9,6 +9,7 @@ int main(int argc, char **argv) {
   ros::Rate loop_rate(10.0);
   int agentNo = std::stoi(argv[1]);
   bool is_armed_ = false;
+  bool update_goal = true;
 
   Simulator* sim = new Simulator(agentNo, argc, argv);
 
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
   sim->setAgentGoal(agent_pose);
 
   while(ros::ok()) {
+    ros::Time start = ros::Time::now();
     ros::spinOnce();
     loop_rate.sleep();
 
@@ -30,11 +32,15 @@ int main(int argc, char **argv) {
       sim->updateSimulator();
     } else {
       // update the agent goal
-      agent_pose = sim->getAgentPosition();
-      agent_pose.pose.position.x = -agent_pose.pose.position.x;
-      agent_pose.pose.position.y = -agent_pose.pose.position.y;
-      sim->setAgentGoal(agent_pose);
+      if (update_goal) {
+        agent_pose = sim->getAgentPosition();
+        agent_pose.pose.position.x = -agent_pose.pose.position.x;
+        agent_pose.pose.position.y = -agent_pose.pose.position.y;
+        sim->setAgentGoal(agent_pose);
+        update_goal = false;
+      }
     }
+    std::cout << "Agent " << agentNo << " : " << ros::Time::now() - start << "\n";
   }
 
   sim->killSimulator();
