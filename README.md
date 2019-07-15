@@ -24,7 +24,7 @@ cd /d-orca
 git submodule update --init
 ```
 ## Documentation
-Visit this [page](https://gamma.umd.edu/researchdirections/aerialswarm/dorca) for more info on installing and using the package.
+This [video](https://www.youtube.com/embed/LnALstxYSjM) illustrates the use cases of the package. Visit this [page](https://gamma.umd.edu/researchdirections/aerialswarm/dorca) for more info on installing and using the package.
 
 ## Issues
 Create issues when you identify bugs.
