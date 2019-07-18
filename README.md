@@ -16,7 +16,7 @@ and run the following command in the /src directory of the workspace to clone th
 
 ```
 git clone https://github.com/harish1696/d-orca
-cd /d-orca
+cd d-orca
 git submodule update --init
 ```
 ## Documentation
