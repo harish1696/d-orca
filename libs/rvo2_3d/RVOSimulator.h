@@ -49,6 +49,9 @@
 #include "pqp/PQP.h"
 #include "tiny_obj_loader.h"
 
+#include <iostream>
+#include "ros/ros.h"
+#include "ros/package.h"
 
 namespace RVO {
 	class Agent;
