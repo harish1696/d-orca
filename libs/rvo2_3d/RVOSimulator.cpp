@@ -46,7 +46,7 @@ namespace RVO {
 
 		// Load Environment Model
 		std::string packagePath = ros::package::getPath("dorca");
-		const std::string MODEL_PATH_ENV = packagePath + "/models/cube.obj";
+		const std::string MODEL_PATH_ENV = packagePath + "/models/env.obj";
 	    tinyobj::attrib_t attrib_Env;
     	std::vector<tinyobj::shape_t> shapes_Env;
     	std::vector<tinyobj::material_t> materials_Env;
@@ -83,7 +83,7 @@ namespace RVO {
 		b1->EndModel();
 
 		//Load Quadrotor Model
-		const std::string MODEL_PATH_QUAD = packagePath + "/models/cube_05.obj";
+		const std::string MODEL_PATH_QUAD = packagePath + "/models/quad.obj";
 
     	tinyobj::attrib_t attrib_Quad;
     	std::vector<tinyobj::shape_t> shapes_Quad;
@@ -132,7 +132,7 @@ namespace RVO {
 
 		// Load Environment Model
 		std::string packagePath = ros::package::getPath("dorca");
-		const std::string MODEL_PATH_ENV = packagePath + "/models/cube.obj";
+		const std::string MODEL_PATH_ENV = packagePath + "/models/env.obj";
 	    tinyobj::attrib_t attrib_Env;
     	std::vector<tinyobj::shape_t> shapes_Env;
     	std::vector<tinyobj::material_t> materials_Env;
@@ -169,7 +169,7 @@ namespace RVO {
 		b1->EndModel();
 
 		//Load Quadrotor Model
-		const std::string MODEL_PATH_QUAD = packagePath + "/models/cube_05.obj";
+		const std::string MODEL_PATH_QUAD = packagePath + "/models/quad.obj";
 
     	tinyobj::attrib_t attrib_Quad;
     	std::vector<tinyobj::shape_t> shapes_Quad;

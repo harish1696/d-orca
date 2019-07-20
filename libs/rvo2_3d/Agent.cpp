@@ -199,7 +199,7 @@ namespace RVO {
   		point1[0] = *dres.P1();
 		point1[1] = -*(dres.P1()+1);
 		point1[2] = -*(dres.P1()+2);
-		//std::cout<<"closest Point: "<<point1<<std::endl;
+		std::cout<<"closest Point: "<<point1<<std::endl;
 
 		const Vector3 relativePosition = point1 - position_;
 		const Vector3 relativeVelocity = velocity_;
