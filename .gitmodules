@@ -1,3 +1,4 @@
 [submodule "Firmware"]
 	path = Firmware
 	url = https://github.com/harish1696/Firmware
+	branch = master
