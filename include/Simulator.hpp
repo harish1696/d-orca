@@ -65,7 +65,7 @@ class Simulator {
     Agent* agent;
 
   public:
-    Simulator(int agentNo, int argc, char** argv);
+    Simulator(int agentNo);
     ~Simulator();
     void initialize();
     void setupSimulator();

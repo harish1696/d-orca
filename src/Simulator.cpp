@@ -35,7 +35,7 @@
 
 #include "Simulator.hpp"
 
-Simulator::Simulator(int agentNo, int argc, char** argv) {
+Simulator::Simulator(int agentNo) {
   nh_.getParam("/dorca/totalAgents", totalAgents);
   nh_.getParam("/dorca/timeStep", timeStep);
   nh_.getParam("/dorca/neighborDist", neighborDist);
@@ -48,7 +48,6 @@ Simulator::Simulator(int agentNo, int argc, char** argv) {
 
   rvo_sim_ = new RVO::RVOSimulator();
   agent = new Agent(agentNo);
-  // InitGazebo(argc, argv);
   initialize();
 
   //sub = node->Subscribe("/gazebo/default/pose/info", &Simulator::gazebocb, this);

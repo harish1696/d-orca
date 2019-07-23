@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
   int agentNo = std::stoi(argv[1]);
   bool is_armed_ = false;
 
-  Simulator* sim = new Simulator(agentNo, argc, argv);
+  Simulator* sim = new Simulator(agentNo);
 
   // Setup RVO simulation.
   sim->setupSimulator();
