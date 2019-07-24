@@ -41,6 +41,8 @@ using namespace std;
 int main(int argc, char **argv) {
   ros::init(argc, argv, "dorcacircle");
   ros::NodeHandle nh;
+  float height;
+  nh.getParam("/dorca/circle/height", height)
   ros::Rate loop_rate(20.0);
   int agentNo = std::stoi(argv[1]);
   bool is_armed_ = false;
@@ -50,7 +52,7 @@ int main(int argc, char **argv) {
   // Setup RVO simulation.
   sim->setupSimulator();
   geometry_msgs::PoseStamped agent_pose = sim->getAgentPosition();
-  agent_pose.pose.position.z = 5;
+  agent_pose.pose.position.z = height;
   sim->setAgentGoal(agent_pose);
 
   while(ros::ok()) {

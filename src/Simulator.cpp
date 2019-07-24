@@ -42,6 +42,7 @@ Simulator::Simulator(int agentNo) {
   nh_.getParam("/dorca/maxNeighbors", maxNeighbors);
   nh_.getParam("/dorca/timeHorizon", timeHorizon);
   nh_.getParam("/dorca/radius", radius);
+  nh_.getParam("/dorca/reachedGoalRadius", reachedGoalRadius);
   nh_.getParam("/dorca/maxSpeed", maxSpeed);
 
   this->agentNo = agentNo;
@@ -143,7 +144,7 @@ void Simulator::setAgentGoal(geometry_msgs::PoseStamped goal) {
 
 bool Simulator::hasAgentReachedGoal() {
   // Check if agent reached goal
-  return agent->reachedGoal(rvo_sim_->getAgentRadius(agentNo));
+  return agent->reachedGoal(reachedGoalRadius);
 }
 
 void Simulator::updateAgent() {

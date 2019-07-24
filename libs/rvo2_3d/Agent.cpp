@@ -182,9 +182,9 @@ namespace RVO {
 		PQP_REAL R1[3][3], R2[3][3], T1[3], T2[3];
 		R1[0][0] = R1[1][1] = R1[2][2] = 1.0;
  		R1[0][1] = R1[1][0] = R1[2][0] = 0.0;
-  		R1[0][2] = R1[1][2] = R1[2][1] = 0.0;
+  	R1[0][2] = R1[1][2] = R1[2][1] = 0.0;
 
-  		R2[0][0] = R2[1][1] = R2[2][2] = 1.0;
+  	R2[0][0] = R2[1][1] = R2[2][2] = 1.0;
 		R2[0][1] = R2[1][0] = R2[2][0] = 0.0;
 		R2[0][2] = R2[1][2] = R2[2][1] = 0.0;
 
@@ -193,13 +193,11 @@ namespace RVO {
 
 		PQP_DistanceResult dres;
 		PQP_Distance(&dres, R1, T1, b1, R2, T2, b2, 0.0, 0.0, 2);
-    	std::cout<<"\nDistance is: "<<dres.Distance();
 
 		Vector3 point1;
-  		point1[0] = *dres.P1();
+  	point1[0] = *dres.P1();
 		point1[1] = -*(dres.P1()+1);
 		point1[2] = -*(dres.P1()+2);
-		std::cout<<"closest Point: "<<point1<<std::endl;
 
 		const Vector3 relativePosition = point1 - position_;
 		const Vector3 relativeVelocity = velocity_;
@@ -211,15 +209,15 @@ namespace RVO {
 		Vector3 u;
 
 		if (distSq > combinedRadiusSq) {
-			// No collision. 
+			// No collision.
 			const Vector3 w = relativeVelocity - invTimeHorizon * relativePosition;
-			// Vector from cutoff center to relative velocity. 
+			// Vector from cutoff center to relative velocity.
 			const float wLengthSq = absSq(w);
 
 			const float dotProduct = w * relativePosition;
 
 			if (dotProduct < 0.0f && sqr(dotProduct) > combinedRadiusSq * wLengthSq) {
-				// Project on cut-off circle. 
+				// Project on cut-off circle.
 				const float wLength = std::sqrt(wLengthSq);
 				const Vector3 unitW = w / wLength;
 
@@ -235,7 +233,7 @@ namespace RVO {
 				const Vector3 w = relativeVelocity - t * relativePosition;
 				const float wLength = abs(w);
 				const Vector3 unitW = w / wLength;
-	
+
 				plane.normal = unitW;
 				u = (combinedRadius * t - wLength) * unitW;
 			}

@@ -21,5 +21,11 @@
 # The radius of the agent. Must be non-negative.
 /dorca/radius : 1
 
+# The radius around goal within which an agent is considered to have reached its goal.
+/dorca/reachedGoalRadius : 0.1
+
 # The maximum speed of the agent. Must be non-negative.
 /dorca/maxSpeed : 1
+
+# The altitude to which agents should fly before moving to & from antipodal positions on a circle.
+/dorca/circle/height : 0.1
