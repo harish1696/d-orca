@@ -28,4 +28,4 @@
 /dorca/maxSpeed : 1
 
 # The altitude to which agents should fly before moving to & from antipodal positions on a circle.
-/dorca/circle/height : 0.1
+/dorca/circle/height : 5
