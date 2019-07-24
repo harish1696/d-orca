@@ -15,7 +15,7 @@ catkin_make
 and run the following command in the /src directory of the workspace to clone the d-orca package
 
 ```
-git clone https://github.com/harish1696/d-orca
+git clone --recursive https://github.com/harish1696/d-orca
 cd d-orca
 git submodule update --init
 ```
