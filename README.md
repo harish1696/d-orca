@@ -12,11 +12,11 @@ mkdir -p src
 catkin_make
 ```
 
-and run the following command in the /src directory of the workspace to clone the d-orca package
+and run the following commands to clone the d-orca package with its submodules
 
 ```
+cd ~/dorca_ws/src
 git clone --recursive https://github.com/harish1696/d-orca
-cd d-orca
 ```
 ## Documentation
 This [video](https://www.youtube.com/embed/LnALstxYSjM) illustrates the use cases of the package. Visit this [page](https://gamma.umd.edu/researchdirections/aerialswarm/dorca) for more info on installing and using the package.
