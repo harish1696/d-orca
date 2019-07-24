@@ -66,7 +66,7 @@ namespace RVO {
 		/**
 		 * \brief   Computes the new velocity of this agent.
 		 */
-		void computeNewVelocity();
+		void computeNewVelocity(PQP_Model *b1, PQP_Model *b2);
 
 		/**
 		 * \brief   Inserts an agent neighbor into the set of neighbors of this agent.

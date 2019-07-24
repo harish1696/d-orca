@@ -45,6 +45,14 @@
 
 #include "Vector3.h"
 
+// Static Collision Avoidance
+#include "pqp/PQP.h"
+#include "tiny_obj_loader.h"
+
+#include <iostream>
+#include "ros/ros.h"
+#include "ros/package.h"
+
 namespace RVO {
 	class Agent;
 	class KdTree;
@@ -310,6 +318,16 @@ namespace RVO {
 		 * \param   timeStep  The time step of the simulation. Must be positive.
 		 */
 		RVO_API void setTimeStep(float timeStep);
+
+		/**
+		 * \brief	PQP model for the quadrotor (sphere).
+		 */
+		PQP_Model *b1 = new PQP_Model;
+		
+		/**
+		 * \brief	PQP model for the Environment obstacles.
+		 */		
+		PQP_Model *b2 = new PQP_Model;
 
 	private:
 		Agent *defaultAgent_;
