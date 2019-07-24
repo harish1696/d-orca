@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
   ros::init(argc, argv, "dorcacircle");
   ros::NodeHandle nh;
   float height;
-  nh.getParam("/dorca/circle/height", height)
+  nh.getParam("/dorca/circle/height", height);
   ros::Rate loop_rate(20.0);
   int agentNo = std::stoi(argv[1]);
   bool is_armed_ = false;
