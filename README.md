@@ -17,7 +17,6 @@ and run the following command in the /src directory of the workspace to clone th
 ```
 git clone --recursive https://github.com/harish1696/d-orca
 cd d-orca
-git submodule update --init
 ```
 ## Documentation
 This [video](https://www.youtube.com/embed/LnALstxYSjM) illustrates the use cases of the package. Visit this [page](https://gamma.umd.edu/researchdirections/aerialswarm/dorca) for more info on installing and using the package.
