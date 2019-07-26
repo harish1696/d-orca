@@ -60,7 +60,7 @@ class Simulator {
     ros::Subscriber gazebo_pose_sub_;
     int totalAgents, agentNo, maxNeighbors;
     float timeStep, neighborDist, timeHorizon, radius, reachedGoalRadius, maxSpeed;
-    bool is_pose_obtained_;
+    bool is_pose_obtained_, staticObstacles;
     RVO::RVOSimulator* rvo_sim_;
     Agent* agent;
 

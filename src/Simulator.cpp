@@ -44,10 +44,11 @@ Simulator::Simulator(int agentNo) {
   nh_.getParam("/dorca/radius", radius);
   nh_.getParam("/dorca/reachedGoalRadius", reachedGoalRadius);
   nh_.getParam("/dorca/maxSpeed", maxSpeed);
+  nh_.getParam("/dorca/staticCollisionAvoidance", staticObstacles);
 
   this->agentNo = agentNo;
 
-  rvo_sim_ = new RVO::RVOSimulator();
+  rvo_sim_ = new RVO::RVOSimulator(staticObstacles);
   agent = new Agent(agentNo);
   initialize();
 
