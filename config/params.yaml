@@ -1,8 +1,34 @@
-# the total number of agents to be spawned
+# The total number of agents to be spawned
 /dorca/totalAgents : 30
+
+# The time step of the simulation. Must be positive.
 /dorca/timeStep : 0.5
+
+# The maximal distance (center point to center point) to other agents the agent takes into account in the navigation.
+# The larger this number, the longer the running time of the simulation. If the number is too low, the simulation will
+# not be safe. Must be non-negative.
 /dorca/neighborDist : 5
+
+# The maximal number of other agents the agent takes into account in the navigation. The larger this number,
+# the longer the running time of the simulation. If the number is too low, the simulation will not be safe.
 /dorca/maxNeighbors : 4
+
+# The minimal amount of time for which the agent's velocities that are computed by the simulation are safe with
+# respect to other agents. The larger this number, the sooner this agent will respond to the presence of other agents,
+# but the less freedom the agent has in choosing its velocities. Must be positive.
 /dorca/timeHorizon : 10
+
+# The radius of the agent. Must be non-negative.
 /dorca/radius : 1
+
+# The radius around goal within which an agent is considered to have reached its goal.
+/dorca/reachedGoalRadius : 0.1
+
+# The maximum speed of the agent. Must be non-negative.
 /dorca/maxSpeed : 1
+
+# Flag to turn on(true)/off(false) static collision avoidance as a feature
+/dorca/staticCollisionAvoidance : false
+
+# The altitude to which agents should fly before moving to & from antipodal positions on a circle.
+/dorca/circle/height : 5

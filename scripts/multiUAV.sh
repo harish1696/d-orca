@@ -1,6 +1,7 @@
 #!/bin/bash
 
 NOOFAGENTS=$1
+WORLD=${2:-empty}
 > ../Firmware/launch/multiUAVLaunch.launch
 
 defaultUDP=14500
@@ -27,7 +28,7 @@ echo "<?xml version=\"1.0\"?>
     <!-- vehicle model and world -->
     <arg name=\"est\" default=\"ekf2\"/>
     <arg name=\"vehicle\" default=\"iris\"/>
-    <arg name=\"world\" default=\"\$(find mavlink_sitl_gazebo)/worlds/empty.world\"/>
+    <arg name=\"world\" default=\"\$(find mavlink_sitl_gazebo)/worlds/$WORLD.world\"/>
     <!-- gazebo configs -->
     <arg name=\"gui\" default=\"true\"/>
     <arg name=\"debug\" default=\"false\"/>
@@ -51,8 +52,6 @@ do
         <arg name=\"fcu_url\" default=\"udp://:$(($defaultUDP+$i))@localhost:$(($defaultLocalHost+$i))\"/>
         <!-- PX4 SITL and vehicle spawn -->
         <include file=\"\$(find px4)/launch/single_vehicle_spawn.launch\">
-            <!--arg name=\"x\" value=\"${pos_x[${i}-1]}\"/>
-            <arg name=\"y\" value=\"${pos_y[${i}-1]}\"/-->
             <arg name=\"x\" value=\" $(sin $i*$divInc) \"/>
             <arg name=\"y\" value=\" $(cos $i*$divInc) \"/>
             <arg name=\"z\" value=\"0\"/>
@@ -63,7 +62,6 @@ do
             <arg name=\"mavlink_udp_port\" value=\"$(($defaultMavLinkUDP+$i))\"/>
             <arg name=\"mavlink_tcp_port\" value=\"$(($defaultMavLinkTCP+$i))\"/>
             <arg name=\"ID\" value=\"\$(arg ID)\"/>
-            <!--arg name=\"node_start_delay\" value=\"5\"/-->
         </include>
         <!-- MAVROS -->
         <include file=\"\$(find mavros)/launch/px4.launch\">

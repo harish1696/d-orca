@@ -116,7 +116,7 @@ namespace RVO {
 		}
 	}
 
-	void Agent::computeNewVelocity()
+	void Agent::computeNewVelocity(PQP_Model *b1, PQP_Model *b2)
 	{
 		orcaPlanes_.clear();
 		const float invTimeHorizon = 1.0f / timeHorizon_;
@@ -177,6 +177,80 @@ namespace RVO {
 			plane.point = velocity_ + 0.5f * u;
 			orcaPlanes_.push_back(plane);
 		}
+
+		// ORCA planes for static obstacles
+		PQP_REAL R1[3][3], R2[3][3], T1[3], T2[3];
+		R1[0][0] = R1[1][1] = R1[2][2] = 1.0;
+ 		R1[0][1] = R1[1][0] = R1[2][0] = 0.0;
+  	R1[0][2] = R1[1][2] = R1[2][1] = 0.0;
+
+  	R2[0][0] = R2[1][1] = R2[2][2] = 1.0;
+		R2[0][1] = R2[1][0] = R2[2][0] = 0.0;
+		R2[0][2] = R2[1][2] = R2[2][1] = 0.0;
+
+		T1[0] = 0.0;  T1[1] = 0.0; T1[2] = 0.0;
+		T2[0] = position_[0];  T2[1] = -position_[1]; T2[2] = -position_[2];
+
+		PQP_DistanceResult dres;
+		PQP_Distance(&dres, R1, T1, b1, R2, T2, b2, 0.0, 0.0, 2);
+
+		Vector3 point1;
+  	point1[0] = *dres.P1();
+		point1[1] = -*(dres.P1()+1);
+		point1[2] = -*(dres.P1()+2);
+
+		const Vector3 relativePosition = point1 - position_;
+		const Vector3 relativeVelocity = velocity_;
+		const float distSq = absSq(relativePosition);
+		const float combinedRadius = radius_;
+		const float combinedRadiusSq = sqr(combinedRadius);
+
+		Plane plane;
+		Vector3 u;
+
+		if (distSq > combinedRadiusSq) {
+			// No collision.
+			const Vector3 w = relativeVelocity - invTimeHorizon * relativePosition;
+			// Vector from cutoff center to relative velocity.
+			const float wLengthSq = absSq(w);
+
+			const float dotProduct = w * relativePosition;
+
+			if (dotProduct < 0.0f && sqr(dotProduct) > combinedRadiusSq * wLengthSq) {
+				// Project on cut-off circle.
+				const float wLength = std::sqrt(wLengthSq);
+				const Vector3 unitW = w / wLength;
+
+				plane.normal = unitW;
+				u = (combinedRadius * invTimeHorizon - wLength) * unitW;
+			}
+			else {
+				// Project on cone.
+				const float a = distSq;
+				const float b = relativePosition * relativeVelocity;
+				const float c = absSq(relativeVelocity) - absSq(cross(relativePosition, relativeVelocity)) / (distSq - combinedRadiusSq);
+				const float t = (b + std::sqrt(sqr(b) - a * c)) / a;
+				const Vector3 w = relativeVelocity - t * relativePosition;
+				const float wLength = abs(w);
+				const Vector3 unitW = w / wLength;
+
+				plane.normal = unitW;
+				u = (combinedRadius * t - wLength) * unitW;
+			}
+		}
+		else {
+			// Collision.
+			const float invTimeStep = 1.0f / sim_->timeStep_;
+			const Vector3 w = relativeVelocity - invTimeStep * relativePosition;
+			const float wLength = abs(w);
+			const Vector3 unitW = w / wLength;
+
+			plane.normal = unitW;
+			u = (combinedRadius * invTimeStep - wLength) * unitW;
+		}
+
+		plane.point = velocity_ + u;
+		orcaPlanes_.push_back(plane);
 
 		const size_t planeFail = linearProgram3(orcaPlanes_, maxSpeed_, prefVelocity_, false, newVelocity_);
 

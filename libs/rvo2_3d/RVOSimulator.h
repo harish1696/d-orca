@@ -45,6 +45,14 @@
 
 #include "Vector3.h"
 
+// Static Collision Avoidance
+#include "pqp/PQP.h"
+#include "tiny_obj_loader.h"
+
+#include <iostream>
+#include "ros/ros.h"
+#include "ros/package.h"
+
 namespace RVO {
 	class Agent;
 	class KdTree;
@@ -82,7 +90,7 @@ namespace RVO {
 		/**
 		 * \brief   Constructs a simulator instance.
 		 */
-		RVO_API RVOSimulator();
+		RVO_API RVOSimulator(bool static_obstacles);
 
 		/**
 		 * \brief   Constructs a simulator instance and sets the default properties for any new agent that is added.
@@ -94,7 +102,7 @@ namespace RVO {
 		 * \param   maxSpeed      The default maximum speed of a new agent. Must be non-negative.
 		 * \param   velocity      The default initial three-dimensional linear velocity of a new agent (optional).
 		 */
-		RVO_API RVOSimulator(float timeStep, float neighborDist, size_t maxNeighbors, float timeHorizon, float radius, float maxSpeed, const Vector3 &velocity = Vector3());
+		RVO_API RVOSimulator(bool static_obstacles, float timeStep, float neighborDist, size_t maxNeighbors, float timeHorizon, float radius, float maxSpeed, const Vector3 &velocity = Vector3());
 
 		/**
 		 * \brief   Destroys this simulator instance.
@@ -311,11 +319,22 @@ namespace RVO {
 		 */
 		RVO_API void setTimeStep(float timeStep);
 
+		/**
+		 * \brief	PQP model for the quadrotor (sphere).
+		 */
+		PQP_Model *b1 = new PQP_Model;
+
+		/**
+		 * \brief	PQP model for the Environment obstacles.
+		 */
+		PQP_Model *b2 = new PQP_Model;
+
 	private:
 		Agent *defaultAgent_;
 		KdTree *kdTree_;
 		float globalTime_;
 		float timeStep_;
+		bool static_obstacles_;
 		std::vector<Agent *> agents_;
 
 		friend class Agent;
