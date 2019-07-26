@@ -1,6 +1,7 @@
 #!/bin/bash
 
 NOOFAGENTS=$1
+WORLD=${2:-empty}
 > ../Firmware/launch/multiUAVLaunch.launch
 
 defaultUDP=14500
@@ -27,7 +28,7 @@ echo "<?xml version=\"1.0\"?>
     <!-- vehicle model and world -->
     <arg name=\"est\" default=\"ekf2\"/>
     <arg name=\"vehicle\" default=\"iris\"/>
-    <arg name=\"world\" default=\"\$(find mavlink_sitl_gazebo)/worlds/empty.world\"/>
+    <arg name=\"world\" default=\"\$(find mavlink_sitl_gazebo)/worlds/$WORLD.world\"/>
     <!-- gazebo configs -->
     <arg name=\"gui\" default=\"true\"/>
     <arg name=\"debug\" default=\"false\"/>
